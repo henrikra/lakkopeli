@@ -26,11 +26,20 @@
             font-size: 24px;
             color: #ffffff; /* White color */
         }
+        .money {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            color: #00ff00; /* Green color */
+        }
     </style>
 </head>
 <body>
     <div class="game-over" id="gameOverText">Game Over! Press Enter to restart</div>
     <div class="score" id="scoreText"></div>
+    <div class="money" id="moneyText"></div>
     <script>
         const config = {
             type: Phaser.AUTO,
@@ -62,6 +71,8 @@
         let gameOverText;
         let score = 0; // Variable to store the score
         let scoreText; // Text object to display the score
+        let money = 0; // Variable to store the money amount
+        let moneyText; // Text object to display the money amount
         let gameEnded = false;
 
         function preload() {
@@ -95,6 +106,10 @@
             scoreText = this.add.text(780, 20, 'Score: 0', { fontFamily: 'Arial', fontSize: '24px', color: '#ffffff' }); // White color
             scoreText.setOrigin(1, 0); // Set origin to top right
 
+            // Money text
+            moneyText = this.add.text(20, 20, 'Lost money in euros: 0', { fontFamily: 'Arial', fontSize: '24px', color: '#00ff00' }); // Green color
+            moneyText.setOrigin(0, 0); // Set origin to top left
+
             // Event listener for Enter key
             this.input.keyboard.on('keydown-ENTER', function () {
                 if (gameEnded) {
@@ -113,6 +128,10 @@
             if (jumpKey.isDown && player.body.onFloor()) {
                 player.setVelocityY(-600);
             }
+
+            // Update money
+            money += 100; // Increase money by 100 euros each frame
+            updateMoney();
 
             obstacles.getChildren().forEach(function(obstacle) {
                 if (obstacle.getBounds().right < 0) {
@@ -162,6 +181,8 @@
             player.setPosition(100, 250);
             score = 0; // Reset score
             updateScore(); // Update score text
+            money = 0; // Reset money
+            updateMoney(); // Update money text
         }
 
         function increaseScore() {
@@ -171,6 +192,10 @@
 
         function updateScore() {
             scoreText.setText('Score: ' + score);
+        }
+
+        function updateMoney() {
+            moneyText.setText('Lost money in euros: ' + money);
         }
     </script>
 </body>
