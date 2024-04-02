@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dino Game</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.54.0/dist/phaser.min.js"></script>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: Arial, sans-serif;
+            font-size: 32px;
+            color: red;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-over" id="gameOverText">Game Over! Press Enter to restart</div>
+    <script>
+        const config = {
+            type: Phaser.AUTO,
+            width: 800,
+            height: 400,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 1000 },
+                    debug: false
+                }
+            },
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            }
+        };
+
+        const game = new Phaser.Game(config);
+        let player;
+        let ground;
+        let cursors;
+        let jumpKey;
+        let obstacles;
+        let groundVelocity = 200;
+        let obstacleSpeed = -400;
+        let background;
+        let groundImage;
+        let gameOverText;
+        let gameEnded = false;
+
+        function preload() {
+            this.load.image('background', 'assets/background.png');
+            this.load.image('ground', 'assets/ground.png');
+            this.load.image('player', 'assets/player.png');
+            this.load.image('obstacle', 'assets/obstacle.png');
+        }
+
+        function create() {
+            background = this.add.tileSprite(0, 0, 800, 400, 'background').setOrigin(0);
+            groundImage = this.add.tileSprite(0, 375, 800, 100, 'ground').setOrigin(0);
+
+            player = this.physics.add.sprite(100, 250, 'player');
+            player.setCollideWorldBounds(true);
+            player.setGravityY(1000);
+
+            cursors = this.input.keyboard.createCursorKeys();
+            jumpKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+            obstacles = this.physics.add.group();
+
+            setupObstacleSpawn(this);
+
+            // Game Over text
+            gameOverText = this.add.text(400, 200, 'Game Over! Press Enter to restart', { fontFamily: 'Arial', fontSize: '32px', color: '#ff0000' });
+            gameOverText.setOrigin(0.5);
+            gameOverText.setVisible(false);
+
+            // Event listener for Enter key
+            this.input.keyboard.on('keydown-ENTER', function () {
+                if (gameEnded) {
+                    restartGame();
+                }
+            });
+        }
+
+        function update() {
+            if (gameEnded) return;
+
+            background.tilePositionX += 0.5;
+
+            groundImage.tilePositionX += groundVelocity / 60;
+
+            if (jumpKey.isDown && player.body.onFloor()) {
+                player.setVelocityY(-600);
+            }
+
+            obstacles.getChildren().forEach(function(obstacle) {
+                if (obstacle.getBounds().right < 0) {
+                    obstacle.destroy();
+                }
+
+                if (Phaser.Geom.Intersects.RectangleToRectangle(player.getBounds(), obstacle.getBounds())) {
+                    gameOver();
+                }
+            });
+        }
+
+        function setupObstacleSpawn(context) {
+            let randomDelay = Phaser.Math.Between(500, 1500);
+            context.time.addEvent({
+                delay: randomDelay,
+                callback: function() {
+                    addObstacle();
+                    setupObstacleSpawn(context);
+                }
+            });
+        }
+
+        function addObstacle() {
+            if (gameEnded) return;
+
+            let obstacle = obstacles.create(800, 380, 'obstacle');
+            obstacle.setVelocityX(obstacleSpeed);
+            obstacle.setGravityY(-1000);
+        }
+
+        function gameOver() {
+            gameEnded = true;
+            game.scene.pause();
+            gameOverText.setVisible(true);
+        }
+
+        function restartGame() {
+            game.scene.resume();
+            gameEnded = false;
+            gameOverText.setVisible(false);
+            obstacles.clear(true, true);
+            player.setPosition(100, 250);
+        }
+    </script>
+</body>
+</html>
