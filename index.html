@@ -98,7 +98,7 @@
             setupObstacleSpawn(this);
 
             // Game Over text
-            gameOverText = this.add.text(400, 200, 'Game Over! Press Enter to restart', { fontFamily: 'Arial', fontSize: '32px', color: '#ff0000' });
+            gameOverText = this.add.text(400, 200, 'Lakkovahti sai sinut kiinni etkä päässyt töihin!', { fontFamily: 'Arial', fontSize: '32px', color: '#ff0000' });
             gameOverText.setOrigin(0.5);
             gameOverText.setVisible(false);
 
@@ -161,7 +161,7 @@
         function addObstacle() {
             if (gameEnded) return;
 
-            let obstacle = obstacles.create(800, 380, 'obstacle');
+            let obstacle = obstacles.create(800, 370, 'obstacle');
             obstacle.setVelocityX(-velocity); // Changed from -velocity to velocity
             obstacle.setGravityY(-1000);
             obstacle.setData('scored', false); // Initialize obstacle as not scored
@@ -191,11 +191,17 @@
         }
 
         function updateScore() {
-            scoreText.setText('Score: ' + score);
+            scoreText.setText('Pisteet: ' + score);
         }
 
         function updateMoney() {
-            moneyText.setText('Lost money in euros: ' + money);
+            const formatter = new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'EUR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            moneyText.setText('Suomen BKT menetys lakkojen aikana: ' + formatter.format(money));
         }
     </script>
 </body>
