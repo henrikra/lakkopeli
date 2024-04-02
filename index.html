@@ -27,193 +27,190 @@
     </style>
 </head>
 <body>
-    <div class="score" id="scoreText"></div>
-    <div class="money" id="moneyText"></div>
     <script>
-        const config = {
-            type: Phaser.AUTO,
-            width: 800,
-            height: 350,
-            physics: {
-                default: 'arcade',
-                arcade: {
-                    gravity: { y: 1000 },
-                    debug: false
-                }
+        class TitleScene extends Phaser.Scene {
+            constructor() {
+                super({ key: 'TitleScene' });
+            }
+
+            preload() {
+                this.load.image('background', 'assets/background.png');
+                this.load.image('startButton', 'assets/start_button.png');
+            }
+
+            create() {
+                const background = this.add.tileSprite(0, 0, 800, 400, 'background').setOrigin(0);
+                const titleText = this.add.text(400, 100, 'LAKKOPELI', { fontFamily: 'Arial', fontSize: '48px', color: '#ffffff' }).setOrigin(0.5);
+                const startButton = this.add.image(400, 200, 'startButton').setInteractive();
+                startButton.on('pointerdown', () => {
+                    this.scene.start('GameScene');
+                });
+            }
+        }
+
+        class GameScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'GameScene' });
+    }
+
+    preload() {
+        this.load.image('background', 'assets/background.png');
+        this.load.image('ground', 'assets/ground.png');
+        this.load.image('player', 'assets/player.png');
+        this.load.image('obstacle', 'assets/obstacle.png');
+    }
+
+    create() {
+        this.background = this.add.tileSprite(0, 0, 800, 400, 'background').setOrigin(0);
+        this.groundImage = this.add.tileSprite(0, 325, 800, 100, 'ground').setOrigin(0);
+
+        this.player = this.physics.add.sprite(100, 250, 'player');
+        this.player.setCollideWorldBounds(true);
+        this.player.setGravityY(1000);
+
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.jumpKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+        this.obstacles = this.physics.add.group();
+        this.setupObstacleSpawn();
+
+        this.gameOverText = this.add.text(400, 200, '', {
+            fontFamily: 'Arial',
+            fontSize: '32px',
+            color: '#ff0000',
+            wordWrap: { width: 400, useAdvancedWrap: true }
+        });
+        this.gameOverText.setOrigin(0.5);
+        this.gameOverText.setVisible(false);
+
+        this.score = 0;
+        this.scoreText = this.add.text(780, 20, 'Pisteet: 0', { fontFamily: 'Arial', fontSize: '24px', color: '#ffffff' });
+        this.scoreText.setOrigin(1, 0);
+
+        this.money = 0;
+        this.moneyText = this.add.text(20, 20, 'Suomen BKT menetys lakkojen aikana: 0', { fontFamily: 'Arial', fontSize: '24px', color: '#00ff00' });
+        this.moneyText.setOrigin(0, 0);
+
+        this.input.keyboard.on('keydown-ENTER', function () {
+            if (this.gameEnded) {
+                this.restartGame();
+            }
+        }, this);
+
+        this.input.on('pointerdown', function () {
+            if (!this.gameEnded) {
+                this.jump();
+            }
+        }, this);
+    }
+
+    update() {
+        if (this.gameEnded) return;
+
+        this.background.tilePositionX += 0.5;
+        this.groundImage.tilePositionX += 400 / 60;
+
+        if ((this.cursors.space.isDown || this.jumpKey.isDown) && this.player.body.onFloor()) {
+            this.jump();
+        }
+
+        this.money += 100;
+        this.updateMoney();
+
+        this.obstacles.getChildren().forEach(function (obstacle) {
+            if (obstacle.getBounds().right < 0) {
+                obstacle.destroy();
+            }
+
+            if (Phaser.Geom.Intersects.RectangleToRectangle(this.player.getBounds(), obstacle.getBounds())) {
+                this.gameOver();
+            } else if (obstacle.getBounds().right < this.player.getBounds().left && !obstacle.getData('scored')) {
+                obstacle.setData('scored', true);
+                this.increaseScore();
+            }
+        }, this);
+    }
+
+    setupObstacleSpawn() {
+        let randomDelay = Phaser.Math.Between(500, 1500);
+        this.time.addEvent({
+            delay: randomDelay,
+            callback: function () {
+                this.addObstacle();
+                this.setupObstacleSpawn();
             },
-            scene: {
-                preload: preload,
-                create: create,
-                update: update
-            }
-        };
+            callbackScope: this
+        });
+    }
 
-        const game = new Phaser.Game(config);
-        let player;
-        let ground;
-        let cursors;
-        let jumpKey;
-        let obstacles;
-        let velocity = 400; // Changed from -400 to 200
-        let background;
-        let groundImage;
-        let gameOverText;
-        let score = 0; // Variable to store the score
-        let scoreText; // Text object to display the score
-        let money = 0; // Variable to store the money amount
-        let moneyText; // Text object to display the money amount
-        let gameEnded = false;
+    addObstacle() {
+        let obstacle = this.obstacles.create(800, 320, 'obstacle');
+        obstacle.setVelocityX(-400);
+        obstacle.setGravityY(-1000);
+        obstacle.setData('scored', false);
+    }
 
-        function preload() {
-            this.load.image('background', 'assets/background.png');
-            this.load.image('ground', 'assets/ground.png');
-            this.load.image('player', 'assets/player.png');
-            this.load.image('obstacle', 'assets/obstacle.png');
+    gameOver() {
+        this.gameEnded = true;
+        this.scene.pause();
+        this.gameOverText.setText('Lakkovahti sai sinut kiinni etkä päässyt töihin! Yritä päästä töihin uudestaan painamalla enter');
+        this.gameOverText.setVisible(true);
+    }
+
+    restartGame() {
+        this.scene.resume();
+        this.gameEnded = false;
+        this.gameOverText.setVisible(false);
+        this.obstacles.clear(true, true);
+        this.player.setPosition(100, 250);
+        this.score = 0;
+        this.updateScore();
+        this.money = 0;
+        this.updateMoney();
+    }
+
+    increaseScore() {
+        this.score++;
+        this.updateScore();
+    }
+
+    updateScore() {
+        this.scoreText.setText('Pisteet: ' + this.score);
+    }
+
+    updateMoney() {
+        const formatter = new Intl.NumberFormat('fi-FI', {
+            style: 'currency',
+            currency: 'EUR',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+        this.moneyText.setText('Suomen BKT menetys lakkojen aikana: ' + formatter.format(this.money));
+    }
+
+    jump() {
+        if (this.player.body.onFloor()) {
+            this.player.setVelocityY(-600);
         }
+    }
+}
 
-        function create() {
-            background = this.add.tileSprite(0, 0, 800, 400, 'background').setOrigin(0);
-            groundImage = this.add.tileSprite(0, 325, 800, 100, 'ground').setOrigin(0);
-
-            player = this.physics.add.sprite(100, 250, 'player');
-            player.setCollideWorldBounds(true);
-            player.setGravityY(1000);
-
-            cursors = this.input.keyboard.createCursorKeys();
-            jumpKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-
-            obstacles = this.physics.add.group();
-
-            setupObstacleSpawn(this);
-
-            // Game Over text
-            gameOverText = this.add.text(400, 200, '', {
-                fontFamily: 'Arial',
-                fontSize: '32px',
-                color: '#ff0000',
-                wordWrap: { width: 400, useAdvancedWrap: true }
-            });
-            gameOverText.setOrigin(0.5);
-            gameOverText.setVisible(false);
-
-            // Score text
-            scoreText = this.add.text(780, 20, 'Pisteet: 0', { fontFamily: 'Arial', fontSize: '24px', color: '#ffffff' }); // White color
-            scoreText.setOrigin(1, 0); // Set origin to top right
-
-            // Money text
-            moneyText = this.add.text(20, 20, 'Suomen BKT menetys lakkojen aikana: 0', { fontFamily: 'Arial', fontSize: '24px', color: '#00ff00' }); // Green color
-            moneyText.setOrigin(0, 0); // Set origin to top left
-
-            // Event listener for Enter key
-            this.input.keyboard.on('keydown-ENTER', function () {
-                if (gameEnded) {
-                    restartGame();
-                }
-            });
-
-            // Event listeners for touch events (for mobile)
-            this.input.on('pointerdown', function () {
-                if (!gameEnded) {
-                    jump();
-                }
-            });
-            this.input.on('pointerup', function () {
-                // No action needed for pointerup
-            });
+const config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 350,
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 1000 },
+            debug: false
         }
+    },
+    scene: [TitleScene, GameScene]
+};
 
-        function update() {
-            if (gameEnded) return;
+const game = new Phaser.Game(config);
 
-            background.tilePositionX += 0.5;
-
-            groundImage.tilePositionX += velocity / 60; // Changed from velocity / 60 to -velocity / 60
-
-            if ((cursors.space.isDown || jumpKey.isDown) && player.body.onFloor()) {
-                jump();
-            }
-
-            // Update money
-            money += 100; // Increase money by 100 euros each frame
-            updateMoney();
-
-            obstacles.getChildren().forEach(function(obstacle) {
-                if (obstacle.getBounds().right < 0) {
-                    obstacle.destroy();
-                }
-
-                if (Phaser.Geom.Intersects.RectangleToRectangle(player.getBounds(), obstacle.getBounds())) {
-                    gameOver();
-                } else if (obstacle.getBounds().right < player.getBounds().left && obstacle.getData('scored') !== true) {
-                    obstacle.setData('scored', true); // Mark the obstacle as scored
-                    increaseScore(); // Increase score
-                }
-            });
-        }
-
-        function setupObstacleSpawn(context) {
-            let randomDelay = Phaser.Math.Between(500, 1500);
-            context.time.addEvent({
-                delay: randomDelay,
-                callback: function() {
-                    addObstacle();
-                    setupObstacleSpawn(context);
-                }
-            });
-        }
-
-        function addObstacle() {
-            if (gameEnded) return;
-
-            let obstacle = obstacles.create(800, 320, 'obstacle');
-            obstacle.setVelocityX(-velocity); // Changed from -velocity to velocity
-            obstacle.setGravityY(-1000);
-            obstacle.setData('scored', false); // Initialize obstacle as not scored
-        }
-
-        function gameOver() {
-            gameEnded = true;
-            game.scene.pause();
-            gameOverText.setText('Lakkovahti sai sinut kiinni etkä päässyt töihin! Yritä päästä töihin uudestaan painamalla enter');
-            gameOverText.setVisible(true);
-        }
-
-        function restartGame() {
-            game.scene.resume();
-            gameEnded = false;
-            gameOverText.setVisible(false);
-            obstacles.clear(true, true);
-            player.setPosition(100, 250);
-            score = 0; // Reset score
-            updateScore(); // Update score text
-            money = 0; // Reset money
-            updateMoney(); // Update money text
-        }
-
-        function increaseScore() {
-            score++;
-            updateScore();
-        }
-
-        function updateScore() {
-            scoreText.setText('Pisteet: ' + score);
-        }
-
-        function updateMoney() {
-            const formatter = new Intl.NumberFormat('fi-FI', {
-                style: 'currency',
-                currency: 'EUR',
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            });
-            moneyText.setText('Suomen BKT menetys lakkojen aikana: ' + formatter.format(money));
-        }
-
-        function jump() {
-            if (player.body.onFloor()) {
-                player.setVelocityY(-600);
-            }
-        }
     </script>
 </body>
 </html>
