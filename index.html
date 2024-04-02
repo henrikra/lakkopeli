@@ -18,10 +18,19 @@
             color: red;
             display: none;
         }
+        .score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            color: #ffffff; /* White color */
+        }
     </style>
 </head>
 <body>
     <div class="game-over" id="gameOverText">Game Over! Press Enter to restart</div>
+    <div class="score" id="scoreText"></div>
     <script>
         const config = {
             type: Phaser.AUTO,
@@ -47,11 +56,12 @@
         let cursors;
         let jumpKey;
         let obstacles;
-        let groundVelocity = 200;
-        let obstacleSpeed = -400;
+        let velocity = 400; // Changed from -400 to 200
         let background;
         let groundImage;
         let gameOverText;
+        let score = 0; // Variable to store the score
+        let scoreText; // Text object to display the score
         let gameEnded = false;
 
         function preload() {
@@ -81,6 +91,10 @@
             gameOverText.setOrigin(0.5);
             gameOverText.setVisible(false);
 
+            // Score text
+            scoreText = this.add.text(780, 20, 'Score: 0', { fontFamily: 'Arial', fontSize: '24px', color: '#ffffff' }); // White color
+            scoreText.setOrigin(1, 0); // Set origin to top right
+
             // Event listener for Enter key
             this.input.keyboard.on('keydown-ENTER', function () {
                 if (gameEnded) {
@@ -94,7 +108,7 @@
 
             background.tilePositionX += 0.5;
 
-            groundImage.tilePositionX += groundVelocity / 60;
+            groundImage.tilePositionX += velocity / 60; // Changed from velocity / 60 to -velocity / 60
 
             if (jumpKey.isDown && player.body.onFloor()) {
                 player.setVelocityY(-600);
@@ -107,6 +121,9 @@
 
                 if (Phaser.Geom.Intersects.RectangleToRectangle(player.getBounds(), obstacle.getBounds())) {
                     gameOver();
+                } else if (obstacle.getBounds().right < player.getBounds().left && obstacle.getData('scored') !== true) {
+                    obstacle.setData('scored', true); // Mark the obstacle as scored
+                    increaseScore(); // Increase score
                 }
             });
         }
@@ -126,8 +143,9 @@
             if (gameEnded) return;
 
             let obstacle = obstacles.create(800, 380, 'obstacle');
-            obstacle.setVelocityX(obstacleSpeed);
+            obstacle.setVelocityX(-velocity); // Changed from -velocity to velocity
             obstacle.setGravityY(-1000);
+            obstacle.setData('scored', false); // Initialize obstacle as not scored
         }
 
         function gameOver() {
@@ -142,6 +160,17 @@
             gameOverText.setVisible(false);
             obstacles.clear(true, true);
             player.setPosition(100, 250);
+            score = 0; // Reset score
+            updateScore(); // Update score text
+        }
+
+        function increaseScore() {
+            score++;
+            updateScore();
+        }
+
+        function updateScore() {
+            scoreText.setText('Score: ' + score);
         }
     </script>
 </body>
