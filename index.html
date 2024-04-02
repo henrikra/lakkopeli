@@ -33,7 +33,7 @@
         const config = {
             type: Phaser.AUTO,
             width: 800,
-            height: 400,
+            height: 350,
             physics: {
                 default: 'arcade',
                 arcade: {
@@ -73,7 +73,7 @@
 
         function create() {
             background = this.add.tileSprite(0, 0, 800, 400, 'background').setOrigin(0);
-            groundImage = this.add.tileSprite(0, 375, 800, 100, 'ground').setOrigin(0);
+            groundImage = this.add.tileSprite(0, 325, 800, 100, 'ground').setOrigin(0);
 
             player = this.physics.add.sprite(100, 250, 'player');
             player.setCollideWorldBounds(true);
@@ -165,7 +165,7 @@
         function addObstacle() {
             if (gameEnded) return;
 
-            let obstacle = obstacles.create(800, 370, 'obstacle');
+            let obstacle = obstacles.create(800, 320, 'obstacle');
             obstacle.setVelocityX(-velocity); // Changed from -velocity to velocity
             obstacle.setGravityY(-1000);
             obstacle.setData('scored', false); // Initialize obstacle as not scored
