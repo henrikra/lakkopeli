@@ -37,7 +37,7 @@
     </style>
 </head>
 <body>
-    <div class="game-over" id="gameOverText">Game Over! Press Enter to restart</div>
+    <div class="game-over" id="gameOverText">Lakkovahti sai sinut kiinni etkä päässyt töihin! Yritä päästä töihin uudestaan painamalla enter</div>
     <div class="score" id="scoreText"></div>
     <div class="money" id="moneyText"></div>
     <script>
@@ -98,16 +98,16 @@
             setupObstacleSpawn(this);
 
             // Game Over text
-            gameOverText = this.add.text(400, 200, 'Lakkovahti sai sinut kiinni etkä päässyt töihin!', { fontFamily: 'Arial', fontSize: '32px', color: '#ff0000' });
+            gameOverText = this.add.text(400, 200, 'Lakkovahti sai sinut kiinni etkä päässyt töihin! Yritä päästä töihin uudestaan painamalla enter', { fontFamily: 'Arial', fontSize: '32px', color: '#ff0000' });
             gameOverText.setOrigin(0.5);
             gameOverText.setVisible(false);
 
             // Score text
-            scoreText = this.add.text(780, 20, 'Score: 0', { fontFamily: 'Arial', fontSize: '24px', color: '#ffffff' }); // White color
+            scoreText = this.add.text(780, 20, 'Pisteet: 0', { fontFamily: 'Arial', fontSize: '24px', color: '#ffffff' }); // White color
             scoreText.setOrigin(1, 0); // Set origin to top right
 
             // Money text
-            moneyText = this.add.text(20, 20, 'Lost money in euros: 0', { fontFamily: 'Arial', fontSize: '24px', color: '#00ff00' }); // Green color
+            moneyText = this.add.text(20, 20, 'Suomen BKT menetys lakkojen aikana: 0', { fontFamily: 'Arial', fontSize: '24px', color: '#00ff00' }); // Green color
             moneyText.setOrigin(0, 0); // Set origin to top left
 
             // Event listener for Enter key
@@ -115,6 +115,16 @@
                 if (gameEnded) {
                     restartGame();
                 }
+            });
+
+            // Event listeners for touch events (for mobile)
+            this.input.on('pointerdown', function () {
+                if (!gameEnded) {
+                    jump();
+                }
+            });
+            this.input.on('pointerup', function () {
+                // No action needed for pointerup
             });
         }
 
@@ -125,8 +135,8 @@
 
             groundImage.tilePositionX += velocity / 60; // Changed from velocity / 60 to -velocity / 60
 
-            if (jumpKey.isDown && player.body.onFloor()) {
-                player.setVelocityY(-600);
+            if ((cursors.space.isDown || jumpKey.isDown) && player.body.onFloor()) {
+                jump();
             }
 
             // Update money
@@ -195,13 +205,19 @@
         }
 
         function updateMoney() {
-            const formatter = new Intl.NumberFormat('en-US', {
+            const formatter = new Intl.NumberFormat('fi-FI', {
                 style: 'currency',
                 currency: 'EUR',
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
             });
             moneyText.setText('Suomen BKT menetys lakkojen aikana: ' + formatter.format(money));
+        }
+
+        function jump() {
+            if (player.body.onFloor()) {
+                player.setVelocityY(-600);
+            }
         }
     </script>
 </body>
