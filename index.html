@@ -12,6 +12,17 @@
 </head>
 <body>
     <script>
+        function formatToFinnishMoney(value) {
+            const formatter = new Intl.NumberFormat('fi-FI', {
+                style: 'currency',
+                currency: 'EUR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+
+            return formatter.format(value)
+        }
+        
         class TitleScene extends Phaser.Scene {
             constructor() {
                 super({ key: 'TitleScene' });
@@ -183,7 +194,7 @@
             }
 
             gameOver() {
-                this.scene.start('EndingScene', { score: this.score });
+                this.scene.start('EndingScene', { score: this.score, money: this.money });
             }
 
             increaseScore() {
@@ -196,13 +207,7 @@
             }
 
             updateMoney() {
-                const formatter = new Intl.NumberFormat('fi-FI', {
-                    style: 'currency',
-                    currency: 'EUR',
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
-                });
-                this.moneyText.setText('Suomen BKT menetys lakkojen aikana: ' + formatter.format(this.money));
+                this.moneyText.setText('Suomen BKT menetys lakkojen aikana: ' + formatToFinnishMoney(this.money));
             }
 
             jump() {
@@ -220,7 +225,13 @@
 
             create(data) {
                 const background = this.add.tileSprite(0, 0, 800, 400, 'background').setOrigin(0);
-                const scoreText = this.add.text(400, 100, 'Score: ' + data.score, { fontFamily: 'Arial', fontSize: '32px', color: '#ffffff' }).setOrigin(0.5);
+                const scoreText = this.add.text(400, 100, 'Hupsis Suomen talous kaatui 📉\nLakkovahti sai sinut kiinni!\nPisteet: ' + data.score + '\nSuomen BKT ehti laskea: ' + formatToFinnishMoney(data.money), { 
+                    fontFamily: 'Arial', 
+                    fontSize: '28px', 
+                    color: '#ffffff',
+                    wordWrap: { width: 430 }
+                }).setOrigin(0.5);
+                // 
                 const restartButton = this.add.image(400, 200, 'startButton').setInteractive();
                 restartButton.on('pointerdown', () => {
                     this.scene.start('GameScene');
@@ -230,6 +241,12 @@
                 this.input.keyboard.on('keydown-ENTER', () => {
                     this.scene.start('GameScene');
                 });
+
+                const sprite = this.add.sprite(625, 120, 'obstacle');
+                sprite.setScale(3);
+                sprite.flipX = true
+
+                sprite.play('obstacle');
             }
         }
 
