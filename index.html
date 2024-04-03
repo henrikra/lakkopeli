@@ -86,6 +86,10 @@
                 this.input.on('pointerdown', function () {
                     this.jump();
                 }, this);
+
+                this.physics.add.overlap(this.player, this.obstacles, function() {
+                    this.gameOver();
+                }, null, this);
             }
 
             update() {
@@ -104,9 +108,7 @@
                         obstacle.destroy();
                     }
 
-                    if (Phaser.Geom.Intersects.RectangleToRectangle(this.player.getBounds(), obstacle.getBounds())) {
-                        this.gameOver();
-                    } else if (obstacle.getBounds().right < this.player.getBounds().left && !obstacle.getData('scored')) {
+                    if (obstacle.getBounds().right < this.player.getBounds().left && !obstacle.getData('scored')) {
                         obstacle.setData('scored', true);
                         this.increaseScore();
                     }
