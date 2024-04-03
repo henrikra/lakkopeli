@@ -68,7 +68,6 @@
                 this.input.on('pointerdown', function () {
                     this.jump();
                 }, this);
-                this.restartGame();
             }
 
             update() {
@@ -117,15 +116,6 @@
 
             gameOver() {
                 this.scene.start('EndingScene', { score: this.score });
-            }
-
-            restartGame() {
-                this.obstacles.clear(true, true);
-                this.player.setPosition(100, 250);
-                this.score = 0;
-                this.updateScore();
-                this.money = 0;
-                this.updateMoney();
             }
 
             increaseScore() {
