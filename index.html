@@ -45,7 +45,6 @@
             preload() {
                 this.load.image('background', 'assets/background.png');
                 this.load.image('ground', 'assets/ms3-trees.png');
-                this.load.image('obstacle', 'assets/obstacle.png');
 
                 this.load.spritesheet('player', 'assets/Run.png', {
                     frameWidth: 128,
@@ -53,6 +52,11 @@
                 });
 
                 this.load.spritesheet('player_jump', 'assets/Jump.png', {
+                    frameWidth: 128,
+                    frameHeight: 128
+                });
+
+                this.load.spritesheet('obstacle', 'assets/Idle_2.png', {
                     frameWidth: 128,
                     frameHeight: 128
                 });
@@ -76,6 +80,13 @@
                     frames: this.anims.generateFrameNumbers('player_jump'),
                     frameRate: 18,
                     repeat: 0
+                });
+
+                this.anims.create({
+                    key: 'obstacle',
+                    frames: this.anims.generateFrameNumbers('obstacle'),
+                    frameRate: 10,
+                    repeat: -1
                 });
 
                 this.player.play('player_run');
@@ -144,10 +155,14 @@
             }
 
             addObstacle() {
-                let obstacle = this.obstacles.create(800, 320, 'obstacle');
+                let obstacle = this.obstacles.create(800, 280, 'obstacle');
+                obstacle.setData('scored', false);
+                obstacle.flipX = true;
+                obstacle.play('obstacle');
+                obstacle.setSize(30, 70, true);
+                obstacle.setOffset(40, 70);
                 obstacle.setVelocityX(-400);
                 obstacle.setGravityY(-1000);
-                obstacle.setData('scored', false);
             }
 
             gameOver() {
@@ -176,7 +191,7 @@
             jump() {
                 this.player.play('player_jump');
                 if (this.player.body.onFloor()) {
-                    this.player.setVelocityY(-600);
+                    this.player.setVelocityY(-650);
                 }
             }
         }
