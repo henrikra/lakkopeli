@@ -51,6 +51,11 @@
                     frameWidth: 128,
                     frameHeight: 128
                 });
+
+                this.load.spritesheet('player_jump', 'assets/Jump.png', {
+                    frameWidth: 128,
+                    frameHeight: 128
+                });
             }
 
             create() {
@@ -64,6 +69,13 @@
                     frames: this.anims.generateFrameNumbers('player'),
                     frameRate: 20,
                     repeat: -1
+                });
+
+                this.anims.create({
+                    key: 'player_jump',
+                    frames: this.anims.generateFrameNumbers('player_jump'),
+                    frameRate: 18,
+                    repeat: 0
                 });
 
                 this.player.play('player_run');
@@ -100,6 +112,8 @@
 
                 if (this.cursors.space.isDown && this.player.body.onFloor()) {
                     this.jump();
+                } else if (this.player.body.onFloor() && this.player.anims.currentAnim.key === 'player_jump') {
+                    this.player.play('player_run');
                 }
 
                 this.money += 100;
@@ -160,8 +174,9 @@
             }
 
             jump() {
+                this.player.play('player_jump');
                 if (this.player.body.onFloor()) {
-                    this.player.setVelocityY(-700);
+                    this.player.setVelocityY(-600);
                 }
             }
         }
