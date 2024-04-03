@@ -84,11 +84,6 @@
                     frameWidth: 128,
                     frameHeight: 128
                 });
-
-                this.load.spritesheet('obstacle', 'assets/Idle_2.png', {
-                    frameWidth: 128,
-                    frameHeight: 128
-                });
             }
 
             create() {
@@ -109,13 +104,6 @@
                     frames: this.anims.generateFrameNumbers('player_jump'),
                     frameRate: 18,
                     repeat: 0
-                });
-
-                this.anims.create({
-                    key: 'obstacle',
-                    frames: this.anims.generateFrameNumbers('obstacle'),
-                    frameRate: 10,
-                    repeat: -1
                 });
 
                 this.player.play('player_run');
@@ -226,7 +214,7 @@
 
             create(data) {
                 const background = this.add.tileSprite(0, 0, 800, 400, 'background').setOrigin(0);
-                const scoreText = this.add.text(400, 100, 'Hupsis Suomen talous kaatui 📉\nLakkovahti sai sinut kiinni!\nPisteet: ' + data.score + '\nSuomen BKT ehti laskea: ' + formatToFinnishMoney(data.money), { 
+                const scoreText = this.add.text(400, 100, 'Hupsis Suomen talous kaatui! 📉\nLakkovahti sai sinut kiinni!\nPisteet: ' + data.score + '\nSuomen BKT ehti laskea: ' + formatToFinnishMoney(data.money), { 
                     fontFamily: 'Arial', 
                     fontSize: '28px', 
                     color: '#ffffff',
