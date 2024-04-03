@@ -20,6 +20,11 @@
             preload() {
                 this.load.image('background', 'assets/background.png');
                 this.load.image('startButton', 'assets/start_button.png');
+
+                this.load.spritesheet('obstacle', 'assets/Idle_2.png', {
+                    frameWidth: 128,
+                    frameHeight: 128
+                });
             }
 
             create() {
@@ -34,6 +39,18 @@
                 this.input.keyboard.on('keydown-ENTER', () => {
                     this.scene.start('GameScene');
                 });
+
+                this.anims.create({
+                    key: 'obstacle',
+                    frames: this.anims.generateFrameNumbers('obstacle'),
+                    frameRate: 10,
+                    repeat: -1
+                });
+
+                const sprite = this.add.sprite(150, 120, 'obstacle');
+                sprite.setScale(2);
+
+                sprite.play('obstacle');
             }
         }
 
