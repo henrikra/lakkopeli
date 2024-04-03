@@ -58,8 +58,6 @@
                 this.groundImage = this.add.tileSprite(0, 325, 800, 100, 'ground').setOrigin(0);
 
                 this.player = this.physics.add.sprite(100, 250, 'player');
-                this.player.setCollideWorldBounds(true);
-                this.player.setGravityY(1000);
 
                 this.anims.create({
                     key: 'player_run',
@@ -69,6 +67,10 @@
                 });
 
                 this.player.play('player_run');
+                this.player.setSize(30, 70, true);
+                this.player.setOffset(40, 70);
+                this.player.setCollideWorldBounds(true);
+                this.player.setGravityY(1000);
 
                 this.cursors = this.input.keyboard.createCursorKeys();
 
