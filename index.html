@@ -45,8 +45,12 @@
             preload() {
                 this.load.image('background', 'assets/background.png');
                 this.load.image('ground', 'assets/ground.png');
-                this.load.image('player', 'assets/player.png');
                 this.load.image('obstacle', 'assets/obstacle.png');
+
+                this.load.spritesheet('player', 'assets/Run.png', {
+                    frameWidth: 128,
+                    frameHeight: 128
+                });
             }
 
             create() {
@@ -56,6 +60,15 @@
                 this.player = this.physics.add.sprite(100, 250, 'player');
                 this.player.setCollideWorldBounds(true);
                 this.player.setGravityY(1000);
+
+                this.anims.create({
+                    key: 'player_run',
+                    frames: this.anims.generateFrameNumbers('player'),
+                    frameRate: 20,
+                    repeat: -1
+                });
+
+                this.player.play('player_run');
 
                 this.cursors = this.input.keyboard.createCursorKeys();
 
@@ -144,7 +157,7 @@
 
             jump() {
                 if (this.player.body.onFloor()) {
-                    this.player.setVelocityY(-600);
+                    this.player.setVelocityY(-700);
                 }
             }
         }
