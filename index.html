@@ -36,6 +36,8 @@
                     frameWidth: 128,
                     frameHeight: 128
                 });
+
+                this.load.audio('title-music', ['assets/title-music.mp3']);
             }
 
             create() {
@@ -43,14 +45,10 @@
                 const titleText = this.add.text(400, 100, 'LAKKOPELI', { fontFamily: 'Arial', fontSize: '48px', color: '#ffffff' }).setOrigin(0.5);
                 const subtitleText = this.add.text(400, 160, 'Onnistutko väistämään lakkovahdit?\nPaina ruutua tai välilyöntiä', { fontFamily: 'Arial', fontSize: '24px', color: '#ffffff', wordWrap: { width: 400 }, align: 'center' }).setOrigin(0.5);
                 const startButton = this.add.image(400, 225, 'startButton').setInteractive();
-                startButton.on('pointerdown', () => {
-                    this.scene.start('GameScene');
-                });
+                startButton.on('pointerdown', this.startGame);
 
                 // Listen for Enter key press to start the game
-                this.input.keyboard.on('keydown-ENTER', () => {
-                    this.scene.start('GameScene');
-                });
+                this.input.keyboard.on('keydown-ENTER', this.startGame);
 
                 this.anims.create({
                     key: 'obstacle',
@@ -63,6 +61,14 @@
                 sprite.setScale(4);
 
                 sprite.play('obstacle');
+
+                this.music = this.sound.add('title-music');
+                this.music.play();
+            }
+
+            startGame = () => {
+                this.music.stop();
+                this.scene.start('GameScene');
             }
         }
 
@@ -84,6 +90,8 @@
                     frameWidth: 128,
                     frameHeight: 128
                 });
+
+                this.load.audio('music', ['assets/music.mp3']);
             }
 
             create() {
@@ -132,6 +140,9 @@
                 this.physics.add.overlap(this.player, this.obstacles, function() {
                     this.gameOver();
                 }, null, this);
+
+                this.music = this.sound.add('music');
+                this.music.play();
             }
 
             update() {
@@ -183,6 +194,7 @@
             }
 
             gameOver() {
+                this.music.stop();
                 this.scene.start('EndingScene', { score: this.score, money: this.money });
             }
 
@@ -212,6 +224,10 @@
                 super({ key: 'EndingScene' });
             }
 
+            preload() {
+                this.load.audio('game-over-music', ['assets/game-over-music.mp3']);
+            }
+
             create(data) {
                 const background = this.add.tileSprite(0, 0, 800, 400, 'background').setOrigin(0);
                 const scoreText = this.add.text(400, 100, 'Hupsis Suomen talous kaatui! 📉\nLakkovahti sai sinut kiinni!\nPisteet: ' + data.score + '\nSuomen BKT ehti laskea: ' + formatToFinnishMoney(data.money), { 
@@ -220,22 +236,26 @@
                     color: '#ffffff',
                     wordWrap: { width: 430 }
                 }).setOrigin(0.5);
-                // 
+
                 const restartButton = this.add.image(400, 200, 'startButton').setInteractive();
-                restartButton.on('pointerdown', () => {
-                    this.scene.start('GameScene');
-                });
+                restartButton.on('pointerdown', this.restartGame);
 
                 // Listen for Enter key press to restart the game
-                this.input.keyboard.on('keydown-ENTER', () => {
-                    this.scene.start('GameScene');
-                });
+                this.input.keyboard.on('keydown-ENTER', this.restartGame);
 
                 const sprite = this.add.sprite(625, 120, 'obstacle');
                 sprite.setScale(3);
                 sprite.flipX = true
 
                 sprite.play('obstacle');
+
+                this.music = this.sound.add('game-over-music')
+                this.music.play();
+            }
+
+            restartGame = () => {
+                this.music.stop();
+                this.scene.start('GameScene');
             }
         }
 
