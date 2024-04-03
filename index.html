@@ -215,9 +215,9 @@
             }
 
             jump() {
-                this.sound.add('jump').play();
-                this.player.play('player_jump');
                 if (this.player.body.onFloor()) {
+                    this.player.play('player_jump');
+                    this.sound.add('jump').play();
                     this.player.setVelocityY(-650);
                 }
             }
