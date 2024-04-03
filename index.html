@@ -29,6 +29,11 @@
                 startButton.on('pointerdown', () => {
                     this.scene.start('GameScene');
                 });
+
+                // Listen for Enter key press to start the game
+                this.input.keyboard.on('keydown-ENTER', () => {
+                    this.scene.start('GameScene');
+                });
             }
         }
 
@@ -154,6 +159,11 @@
                 const scoreText = this.add.text(400, 100, 'Score: ' + data.score, { fontFamily: 'Arial', fontSize: '32px', color: '#ffffff' }).setOrigin(0.5);
                 const restartButton = this.add.image(400, 200, 'startButton').setInteractive();
                 restartButton.on('pointerdown', () => {
+                    this.scene.start('GameScene');
+                });
+
+                // Listen for Enter key press to restart the game
+                this.input.keyboard.on('keydown-ENTER', () => {
                     this.scene.start('GameScene');
                 });
             }
