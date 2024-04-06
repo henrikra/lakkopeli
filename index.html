@@ -21,7 +21,7 @@
 </head>
 <body>
     <script>
-        const gameConfig = {width: 800, height: 337};
+        const gameConfig = {width: 800, height: 320};
 
         function formatToFinnishMoney(value) {
             const formatter = new Intl.NumberFormat('fi-FI', {
@@ -105,7 +105,7 @@
 
             preload() {
                 this.load.image('background', 'assets/background.png');
-                this.load.image('ground', 'assets/foreground.png');
+                this.load.image('foreground', 'assets/foreground.png');
                 this.load.image('island', 'assets/island.png');
 
                 this.load.spritesheet('player', 'assets/run.png', {
@@ -124,12 +124,12 @@
 
             create() {
                 this.background = this.add.tileSprite(0, 0, gameConfig.width, gameConfig.height, 'background').setOrigin(0);
-                this.groundImage = this.add.tileSprite(0, 40, gameConfig.width, 320, 'ground').setOrigin(0);
+                this.groundImage = this.add.tileSprite(0, 20, gameConfig.width, 300, 'foreground').setOrigin(0);
 
                 this.player = this.physics.add.sprite(100, 250, 'player');
 
                 let platforms = this.physics.add.staticGroup()
-                platforms.create(100, 320, "island").setAlpha(0);
+                platforms.create(100, 310, "island").setAlpha(0);
 
                 this.physics.add.collider(this.player, platforms)
 
@@ -215,7 +215,7 @@
             }
 
             addObstacle() {
-                let obstacle = this.obstacles.create(800, 280, 'obstacle');
+                let obstacle = this.obstacles.create(800, 270, 'obstacle');
                 obstacle.setData('scored', false);
                 obstacle.play('obstacle');
                 obstacle.setSize(40, 60);
