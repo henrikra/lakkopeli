@@ -42,12 +42,16 @@
             }
 
             preload() {
-                this.load.image('background', 'assets/background.png');
+                this.load.image('background', 'assets/menu.png');
                 this.load.image('startButton', 'assets/start_button.png');
 
-                this.load.spritesheet('obstacle', 'assets/Idle_2.png', {
-                    frameWidth: 128,
-                    frameHeight: 128
+                this.load.spritesheet('obstacle', 'assets/enemy.png', {
+                    frameWidth: 64,
+                    frameHeight: 64
+                });
+                this.load.spritesheet('logo', 'assets/logo.png', {
+                    frameWidth: 512,
+                    frameHeight: 320
                 });
 
                 this.load.audio('title-music', ['assets/music/title-music.mp3']);
@@ -55,7 +59,6 @@
 
             create() {
                 const background = this.add.tileSprite(0, 0, gameConfig.width, gameConfig.height, 'background').setOrigin(0);
-                const titleText = this.add.text(400, 100, 'LAKKOPELI', { fontFamily: 'Arial', fontSize: '48px', color: '#ffffff' }).setOrigin(0.5);
                 const subtitleText = this.add.text(400, 160, 'Onnistutko väistämään lakkovahdit?\nPaina ruutua tai välilyöntiä', { fontFamily: 'Arial', fontSize: '24px', color: '#ffffff', wordWrap: { width: 400 }, align: 'center' }).setOrigin(0.5);
                 const startButton = this.add.image(400, 225, 'startButton').setInteractive();
                 startButton.on('pointerdown', this.startGame);
@@ -70,10 +73,20 @@
                     repeat: -1
                 });
 
-                const sprite = this.add.sprite(150, 120, 'obstacle');
-                sprite.setScale(4);
+                this.anims.create({
+                    key: 'logo',
+                    frames: this.anims.generateFrameNumbers('logo'),
+                    frameRate: 8,
+                    repeat: -1
+                });
 
+                const sprite = this.add.sprite(125, 175, 'obstacle');
+                sprite.setScale(3);
+                sprite.flipX = true;
                 sprite.play('obstacle');
+
+                const logo = this.add.sprite(400, 100, 'logo');
+                logo.play('logo');
 
                 this.music = this.sound.add('title-music');
                 this.music.play(musicConfig);
@@ -92,16 +105,16 @@
 
             preload() {
                 this.load.image('background', 'assets/background.png');
-                this.load.image('ground', 'assets/ms3-trees.png');
+                this.load.image('ground', 'assets/foreground.png');
 
-                this.load.spritesheet('player', 'assets/Run.png', {
-                    frameWidth: 128,
-                    frameHeight: 128
+                this.load.spritesheet('player', 'assets/run.png', {
+                    frameWidth: 64,
+                    frameHeight: 64
                 });
 
-                this.load.spritesheet('player_jump', 'assets/Jump.png', {
-                    frameWidth: 128,
-                    frameHeight: 128
+                this.load.spritesheet('player_jump', 'assets/jump.png', {
+                    frameWidth: 64,
+                    frameHeight: 64
                 });
 
                 this.load.audio('music', ['assets/music/music.mp3']);
@@ -117,20 +130,20 @@
                 this.anims.create({
                     key: 'player_run',
                     frames: this.anims.generateFrameNumbers('player'),
-                    frameRate: 20,
+                    frameRate: 8,
                     repeat: -1
                 });
 
                 this.anims.create({
                     key: 'player_jump',
                     frames: this.anims.generateFrameNumbers('player_jump'),
-                    frameRate: 18,
+                    frameRate: 8,
                     repeat: 0
                 });
 
                 this.player.play('player_run');
-                this.player.setSize(30, 70, true);
-                this.player.setOffset(40, 70);
+                this.player.setSize(40, 60);
+                // this.player.setOffset(0, 10);
                 this.player.setCollideWorldBounds(true);
                 this.player.setGravityY(1000);
 
@@ -185,7 +198,7 @@
             }
 
             setupObstacleSpawn() {
-                let randomDelay = Phaser.Math.Between(450, 1500);
+                let randomDelay = Phaser.Math.Between(500, 1500);
                 this.time.addEvent({
                     delay: randomDelay,
                     callback: function () {
@@ -199,10 +212,9 @@
             addObstacle() {
                 let obstacle = this.obstacles.create(800, 280, 'obstacle');
                 obstacle.setData('scored', false);
-                obstacle.flipX = true;
                 obstacle.play('obstacle');
-                obstacle.setSize(30, 70, true);
-                obstacle.setOffset(40, 70);
+                obstacle.setSize(40, 60);
+                // obstacle.setOffset(40, 70);
                 obstacle.setVelocityX(-400);
                 obstacle.setGravityY(-1000);
             }
@@ -229,7 +241,7 @@
                 if (this.player.body.onFloor()) {
                     this.player.play('player_jump');
                     this.sound.add('jump').play();
-                    this.player.setVelocityY(-650);
+                    this.player.setVelocityY(-750);
                 }
             }
         }
@@ -258,9 +270,8 @@
                 // Listen for Enter key press to restart the game
                 this.input.keyboard.on('keydown-ENTER', this.restartGame);
 
-                const sprite = this.add.sprite(625, 120, 'obstacle');
+                const sprite = this.add.sprite(625, 175, 'obstacle');
                 sprite.setScale(3);
-                sprite.flipX = true
 
                 sprite.play('obstacle');
 
