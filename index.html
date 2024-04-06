@@ -43,7 +43,7 @@
 
             preload() {
                 this.load.image('background', 'assets/menu.png');
-                this.load.image('startButton', 'assets/start_button.png');
+                this.load.image('startButton', 'assets/start-game-button.png');
 
                 this.load.spritesheet('obstacle', 'assets/enemy.png', {
                     frameWidth: 64,
@@ -106,6 +106,7 @@
             preload() {
                 this.load.image('background', 'assets/background.png');
                 this.load.image('ground', 'assets/foreground.png');
+                this.load.image('island', 'assets/island.png');
 
                 this.load.spritesheet('player', 'assets/run.png', {
                     frameWidth: 64,
@@ -127,6 +128,11 @@
 
                 this.player = this.physics.add.sprite(100, 250, 'player');
 
+                let platforms = this.physics.add.staticGroup()
+                platforms.create(100, 320, "island").setAlpha(0);
+
+                this.physics.add.collider(this.player, platforms)
+
                 this.anims.create({
                     key: 'player_run',
                     frames: this.anims.generateFrameNumbers('player'),
@@ -143,7 +149,6 @@
 
                 this.player.play('player_run');
                 this.player.setSize(40, 60);
-                // this.player.setOffset(0, 10);
                 this.player.setCollideWorldBounds(true);
                 this.player.setGravityY(1000);
 
@@ -214,7 +219,6 @@
                 obstacle.setData('scored', false);
                 obstacle.play('obstacle');
                 obstacle.setSize(40, 60);
-                // obstacle.setOffset(40, 70);
                 obstacle.setVelocityX(-400);
                 obstacle.setGravityY(-1000);
             }
