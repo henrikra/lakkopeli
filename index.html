@@ -159,7 +159,7 @@
                 });
 
                 this.player.play('player_run');
-                this.player.setSize(40, 60);
+                this.player.setSize(30, 50);
                 this.player.setCollideWorldBounds(true);
                 this.player.setGravityY(1000);
 
@@ -237,7 +237,7 @@
                 let obstacle = this.obstacles.create(800, 270, 'obstacle');
                 obstacle.setData('scored', false);
                 obstacle.play('obstacle');
-                obstacle.setSize(40, 60);
+                obstacle.setSize(30, 50);
                 obstacle.setVelocityX(-400);
                 obstacle.setGravityY(-1000);
             }
