@@ -59,7 +59,15 @@
 
             create() {
                 const background = this.add.tileSprite(0, 0, gameConfig.width, gameConfig.height, 'background').setOrigin(0);
-                const subtitleText = this.add.text(400, 160, 'Onnistutko väistämään lakkovahdit?\nPaina ruutua tai välilyöntiä', { fontFamily: 'Arial', fontSize: '24px', color: '#ffffff', wordWrap: { width: 400 }, align: 'center' }).setOrigin(0.5);
+                const subtitleText = this.add.text(400, 160, 'Onnistutko väistämään lakkovahdit?\nPaina ruutua tai välilyöntiä', { 
+                    fontFamily: 'Arial', 
+                    fontSize: '22px', 
+                    color: '#ffffff', 
+                    wordWrap: { width: 400 },
+                    align: 'center',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    padding: 8
+                }).setOrigin(0.5);
                 const startButton = this.add.image(400, 225, 'startButton').setInteractive();
                 startButton.on('pointerdown', this.startGame);
 
@@ -85,7 +93,7 @@
                 sprite.flipX = true;
                 sprite.play('obstacle');
 
-                const logo = this.add.sprite(400, 100, 'logo');
+                const logo = this.add.sprite(400, 90, 'logo');
                 logo.play('logo');
 
                 this.music = this.sound.add('title-music');
@@ -143,7 +151,7 @@
                 this.anims.create({
                     key: 'player_jump',
                     frames: this.anims.generateFrameNumbers('player_jump'),
-                    frameRate: 8,
+                    frameRate: 5,
                     repeat: 0
                 });
 
@@ -158,11 +166,23 @@
                 this.setupObstacleSpawn();
 
                 this.score = 0;
-                this.scoreText = this.add.text(780, 20, 'Pisteet: 0', { fontFamily: 'Arial', fontSize: '24px', color: '#ffffff' });
+                this.scoreText = this.add.text(780, 20, 'Pisteet: 0', { 
+                    fontFamily: 'Arial', 
+                    fontSize: '24px', 
+                    color: '#ffffff',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    padding: 8
+                });
                 this.scoreText.setOrigin(1, 0);
 
                 this.money = 0;
-                this.moneyText = this.add.text(20, 20, 'Suomen BKT menetys lakkojen aikana: 0', { fontFamily: 'Arial', fontSize: '24px', color: '#00ff00' });
+                this.moneyText = this.add.text(20, 20, 'Suomen BKT lakkojen aikana: 0', { 
+                    fontFamily: 'Arial', 
+                    fontSize: '24px', 
+                    color: 'white',
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    padding: 8
+                });
                 this.moneyText.setOrigin(0, 0);
 
                 this.input.on('pointerdown', function () {
@@ -238,7 +258,7 @@
             }
 
             updateMoney() {
-                this.moneyText.setText('Suomen BKT menetys lakkojen aikana: ' + formatToFinnishMoney(this.money));
+                this.moneyText.setText('Suomen BKT lakkojen aikana: -' + formatToFinnishMoney(this.money));
             }
 
             jump() {
@@ -261,20 +281,22 @@
 
             create(data) {
                 const background = this.add.tileSprite(0, 0, gameConfig.width, gameConfig.height, 'background').setOrigin(0);
-                const scoreText = this.add.text(400, 100, 'Hupsista Suomen talous kaatui! 📉\nLakkovahti sai sinut kiinni!\nPisteet: ' + data.score + '\nSuomen BKT ehti laskea: ' + formatToFinnishMoney(data.money), { 
+                const scoreText = this.add.text(400, 140, 'Hupsista Suomen talous kaatui! 📉\nLakkovahti sai sinut kiinni!\nPisteet: ' + data.score + '\nSuomen BKT ehti laskea: ' + formatToFinnishMoney(data.money), { 
                     fontFamily: 'Arial', 
                     fontSize: '28px', 
                     color: '#ffffff',
-                    wordWrap: { width: 430 }
+                    wordWrap: { width: 430 },
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                    padding: 16
                 }).setOrigin(0.5);
 
-                const restartButton = this.add.image(400, 200, 'startButton').setInteractive();
+                const restartButton = this.add.image(400, 260, 'startButton').setInteractive();
                 restartButton.on('pointerdown', this.restartGame);
 
                 // Listen for Enter key press to restart the game
                 this.input.keyboard.on('keydown-ENTER', this.restartGame);
 
-                const sprite = this.add.sprite(625, 175, 'obstacle');
+                const sprite = this.add.sprite(630, 190, 'obstacle');
                 sprite.setScale(3);
 
                 sprite.play('obstacle');
