@@ -188,10 +188,6 @@
                 });
                 this.moneyText.setOrigin(0, 0);
 
-                this.input.on('pointerdown', function () {
-                    this.jump();
-                }, this);
-
                 this.physics.add.overlap(this.player, this.obstacles, function() {
                     this.gameOver();
                 }, null, this);
@@ -204,7 +200,7 @@
                 this.background.tilePositionX += 0.5;
                 this.groundImage.tilePositionX += 3.35;
 
-                if (this.cursors.space.isDown) {
+                if (this.cursors.space.isDown || this.input.activePointer.isDown) {
                     this.jump();
                 } else if (this.player.body.onFloor() && this.player.anims.currentAnim.key === 'player_jump') {
                     this.player.play('player_run');
