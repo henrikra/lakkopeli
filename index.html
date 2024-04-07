@@ -289,7 +289,12 @@
                     padding: 16
                 }).setOrigin(0.5);
 
-                const restartButton = this.add.image(400, 270, 'startButton').setInteractive();
+                this.add.text(20, gameConfig.height - 50, 'Ohjelmoinut: Henrik Raitasola').setInteractive({ useHandCursor: true  } ).on('pointerdown', this.openAuthor);;
+                this.add.text(20, gameConfig.height - 30, 'https://linkedin.com/in/henrikraitasola', {
+                    color: '#00FFFF'
+                }).setInteractive({ useHandCursor: true  }).on('pointerdown', this.openAuthor);
+
+                const restartButton = this.add.image(400, 265, 'startButton').setInteractive();
                 restartButton.on('pointerdown', this.restartGame);
 
                 // Listen for Enter key press to restart the game
@@ -309,6 +314,10 @@
             restartGame = () => {
                 this.music.stop();
                 this.scene.start('GameScene');
+            }
+
+            openAuthor = () => {
+                window.open('https://www.linkedin.com/in/henrikraitasola/')
             }
         }
 
