@@ -166,9 +166,9 @@
                 this.cursors = this.input.keyboard.createCursorKeys();
 
                 this.obstacles = this.physics.add.group();
+                this.score = 0;
                 this.setupObstacleSpawn();
 
-                this.score = 0;
                 this.scoreText = this.add.text(780, 20, 'Pisteet: 0', { 
                     fontFamily: 'Arial', 
                     fontSize: '24px', 
@@ -217,8 +217,8 @@
                 });
             }
 
-            setupObstacleSpawn() {
-                let randomDelay = Phaser.Math.Between(550, 1500);
+            setupObstacleSpawn = () => {
+                let randomDelay = Phaser.Math.Between(550 - this.score, 1500 - this.score * 2);
                 this.time.addEvent({
                     delay: randomDelay,
                     callback: function () {
