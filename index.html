@@ -209,16 +209,12 @@
                 this.money += 10000;
                 this.updateMoney();
 
-                this.obstacles.getChildren().forEach(function (obstacle) {
+                this.obstacles.getChildren().forEach((obstacle) => {
                     if (obstacle.getBounds().right < 0) {
+                        this.increaseScore();
                         obstacle.destroy();
                     }
-
-                    if (obstacle.getBounds().right < this.player.getBounds().left && !obstacle.getData('scored')) {
-                        obstacle.setData('scored', true);
-                        this.increaseScore();
-                    }
-                }, this);
+                });
             }
 
             setupObstacleSpawn() {
@@ -235,7 +231,6 @@
 
             addObstacle() {
                 let obstacle = this.obstacles.create(800, 270, 'obstacle');
-                obstacle.setData('scored', false);
                 obstacle.play('obstacle');
                 obstacle.setSize(30, 50);
                 obstacle.setVelocityX(-400);
